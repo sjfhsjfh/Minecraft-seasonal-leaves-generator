@@ -2,7 +2,11 @@
 
 [简中版本](.\README.md)
 
-Colorful leaves and vines in [Minecraft](https://www.minecraft.net/) . Useless generator, I guess.
+Colorful leaves and vines in [Minecraft](https://www.minecraft.net/) .
+
+Useless generator, I guess.
+
+No support for .zip resource packs right now.
 
 ## Author
 
