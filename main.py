@@ -10,7 +10,7 @@ available_list = ['acacia_leaves', 'birch_leaves',
                   'dark_oak_leaves', 'jungle_leaves', 'oak_leaves', 'spruce_leaves']
 default_color = {'acacia_leaves': (174, 164, 42, 255), 'birch_leaves': (26, 191, 0, 255), 'dark_oak_leaves': (
     26, 191, 0, 255), 'jungle_leaves': (26, 191, 0, 255), 'oak_leaves': (26, 191, 0, 255), 'spruce_leaves': (96, 161, 123, 255)}
-t_r, t_g, t_b, t_a = target_color = (255, 217, 0, 255)
+t_r, t_g, t_b, t_a = target_color = (255, 192, 0, 255)
 translation = {'zh': {"Fuck! ": "你🐴死了"}}
 
 # Seasonal leaves frames
