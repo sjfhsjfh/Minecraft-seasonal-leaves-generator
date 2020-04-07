@@ -1,11 +1,15 @@
 # Try to add seasonal change for Minecraft resource packs.
 # Requires pillow(PIL)
 
-import os, json
+import os
+import json
 from PIL import Image
 
 lang = 'en'
-available_list = ['acacia_leaves', 'birch_leaves', 'dark_oak_leaves', 'jungle_leaves', 'oak_leaves', 'spruce_leaves']
+available_list = ['acacia_leaves', 'birch_leaves',
+                  'dark_oak_leaves', 'jungle_leaves', 'oak_leaves', 'spruce_leaves']
+default_color = {'acacia_leaves': (174, 164, 42, 255), 'birch_leaves': (26, 191, 0, 255), 'dark_oak_leaves': (
+    26, 191, 0, 255), 'jungle_leaves': (26, 191, 0, 255), 'oak_leaves': (26, 191, 0, 255), 'spruce_leaves': (96, 161, 123, 255)}
 translation = {'zh': {"Fuck! ": "你🐴死了"}}
 
 # Seasonal leaves frames
@@ -40,9 +44,9 @@ def trans(text: str) -> str:
 # Img processing & .mcmeta writing
 
 
-def convert(img_dir: str, tint: bool = True) -> None:
+def convert(img_dir: str, tint: bool = False) -> None:
     """Processing the .png image only. """
-    global frames
+    global frames, default_color
 
     # Img part
     if os.path.isfile(img_dir):
@@ -64,7 +68,7 @@ def convert(img_dir: str, tint: bool = True) -> None:
         for x in range(0, w):
             for y in range(0, h):
                 r_r, r_g, r_b, r_a = raw_pix[x, y]
-                if r_r != r_g or r_r != r_b:
+                if abs(r_r - r_g) > 1 or abs(r_r - r_b) > 1 or abs(r_g - r_b) > 1:
                     tint = True
                     break
 
@@ -73,7 +77,8 @@ def convert(img_dir: str, tint: bool = True) -> None:
             for x in range(0, w):
                 for y in range(0, h):
                     r_r, r_g, r_b, r_a = raw_pix[x, y]
-                    r_g = 255
+                    if r_a > 0:
+                        r_r, r_g, r_b, r_a = default_color[name]
                     raw_pix[x, y] = (r_r, r_g, r_b, r_a)
 
         # Frames
@@ -91,7 +96,7 @@ def convert(img_dir: str, tint: bool = True) -> None:
 
             # Paste the frame on the ans img
             ans.paste(frame, (0, i * h))
-        
+
         # Save the output
         ans.save(img_dir)
 
@@ -117,15 +122,14 @@ def convert(img_dir: str, tint: bool = True) -> None:
             raw_mcmeta = mcmeta_file.read()
             # Later to support animated textures
             #mcmeta = json.loads(raw_mcmeta)
-            #mcmeta["animation"]
+            # mcmeta["animation"]
             with open(os.path.join(pname, 'raaaaaw_' + fname + '.mcmeta'), 'w') as backup:
                 backup.write(raw_mcmeta)
     except:
         with open(os.path.join(pname, fname + '.mcmeta'), 'w') as mcmeta_file:
-            mcmeta = {'animation':{'frametime':round(4383000 / frames)}}
-            mcmeta = json.dumps(mcmeta, ensure_ascii = False, indent = 4)
+            mcmeta = {'animation': {'frametime': round(4383000 / frames)}}
+            mcmeta = json.dumps(mcmeta, ensure_ascii=False, indent=4)
             mcmeta_file.write(mcmeta)
-
 
 
 # Main
@@ -178,7 +182,7 @@ dir = os.path.join(dir, target_resourcepack, 'assets', 'minecraft')
 
 # Edit the model json file
 try:
-    with open(os.path.join(dir, 'assets', 'minecraft', 'models', 'leaves.json'), 'r') as leaves:
+    with open(os.path.join(dir, 'models', 'leaves.json'), 'r') as leaves:
         setting = leaves.read()
     setting = json.loads(setting)
     for face in ['down', 'up', 'north', 'south', 'west', 'east']:
@@ -189,19 +193,17 @@ try:
                 pass
     setting = json.dumps(setting)
 
-## Add one according to the default texture
+# Add one according to the default texture
 except:
     with open(os.path.join(os.path.split(__file__)[0], 'default_texture', 'leaves.json'), 'r') as leaves:
         setting = leaves.read()
 
-## Write the model json file
-with open(os.path.join(dir, 'assets', 'minecraft', 'models', 'leaves.json'), 'w') as leaves:
+# Write the model json file
+with open(os.path.join(dir, 'models', 'leaves.json'), 'w') as leaves:
     leaves.write(setting)
 
 # Process the leaves
 for leaf in available_list:
     convert(os.path.join(dir, 'textures', 'block', leaf + '.png'))
-    print(trans("* Processed texture < ") + leaf + '.png' + trans(" > successfully. "))
-
-        
-
+    print(trans("* Processed texture < ") + leaf +
+          '.png' + trans(" > successfully. "))
