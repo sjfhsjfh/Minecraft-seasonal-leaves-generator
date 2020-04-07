@@ -26,4 +26,5 @@ Buuuuug Fixed.
 1. zh-cn support
 2. use **Vanilla** color in default texture
 3. VINES!
-~~4. GUI~~
+4. Froced coloring tint difference
+~~5. GUI~~
