@@ -60,7 +60,7 @@ def convert(img_dir: str, tint: bool = False) -> None:
         # Save the raw image
         img.save(os.path.join(pname, 'raaaaaw_' + name + ename))
         w, h = img.size
-        ans_size = (w, h * frames)
+        ans_size = (w, h * 2 * (frames - 1))
         ans = Image.new('RGBA', ans_size, '#00000000')
         raw_pix = img.load()
 
@@ -69,7 +69,7 @@ def convert(img_dir: str, tint: bool = False) -> None:
             for y in range(0, h):
                 r_r, r_g, r_b, r_a = raw_pix[x, y]
                 if abs(r_r - r_g) > 1 or abs(r_r - r_b) > 1 or abs(r_g - r_b) > 1:
-                    tint = True
+                    tint = False
                     break
 
         # Forced coloring (only green now)
@@ -96,6 +96,8 @@ def convert(img_dir: str, tint: bool = False) -> None:
 
             # Paste the frame on the ans img
             ans.paste(frame, (0, i * h))
+            if i != 1:
+                ans.paste(frame, (0, (2 * frames - 1 - i) * h))
 
         # Save the output
         ans.save(img_dir)
