@@ -10,6 +10,7 @@ available_list = ['acacia_leaves', 'birch_leaves',
                   'dark_oak_leaves', 'jungle_leaves', 'oak_leaves', 'spruce_leaves']
 default_color = {'acacia_leaves': (174, 164, 42, 255), 'birch_leaves': (26, 191, 0, 255), 'dark_oak_leaves': (
     26, 191, 0, 255), 'jungle_leaves': (26, 191, 0, 255), 'oak_leaves': (26, 191, 0, 255), 'spruce_leaves': (96, 161, 123, 255)}
+t_r, t_g, t_b, t_a = target_color = (255, 217, 0, 255)
 translation = {'zh': {"Fuck! ": "你🐴死了"}}
 
 # Seasonal leaves frames
@@ -46,7 +47,7 @@ def trans(text: str) -> str:
 
 def convert(img_dir: str, tint: bool = False) -> None:
     """Processing the .png image only. """
-    global frames, default_color
+    global frames, default_color, t_r, t_g, t_b, t_a
 
     # Img part
     if os.path.isfile(img_dir):
@@ -69,7 +70,7 @@ def convert(img_dir: str, tint: bool = False) -> None:
             for y in range(0, h):
                 r_r, r_g, r_b, r_a = raw_pix[x, y]
                 if abs(r_r - r_g) > 1 or abs(r_r - r_b) > 1 or abs(r_g - r_b) > 1:
-                    tint = False
+                    tint = True
                     break
 
         # Forced coloring (only green now)
@@ -91,7 +92,10 @@ def convert(img_dir: str, tint: bool = False) -> None:
                 for y in range(0, h):
                     r, g, b, a = frame_pix[x, y]
                     r_r, r_g, r_b, r_a = raw_pix[x, y]
-                    r = round(r_r + (i / (frames - 1)) * (r_g - r_r))
+                    if r_a == 255:
+                        r = round(r_r + (i / (frames - 1)) * (t_r - r_r))
+                        g = round(r_g + (i / (frames - 1)) * (t_g - r_g))
+                        b = round(r_b + (i / (frames - 1)) * (t_b - r_b))
                     frame_pix[x, y] = (r, g, b, a)
 
             # Paste the frame on the ans img
@@ -106,7 +110,7 @@ def convert(img_dir: str, tint: bool = False) -> None:
     else:
         pname, fname = os.path.split(img_dir)
         name, ename = os.path.splitext(fname)
-        pydir, pyname = os.path.split(__file__)
+        pydir = os.path.split(__file__)[0]
         print(trans("* No texture found for"), name,
               trans(", trying to use the generated texture. "))
         try:
